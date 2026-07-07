@@ -1,8 +1,41 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "apps/micro-device/src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/micro-device/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/micro-device",
+  "projects": {
+    "micro-authz": {
+      "type": "application",
+      "root": "apps/micro-authz",
+      "entryFile": "main",
+      "sourceRoot": "apps/micro-authz/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/micro-authz/tsconfig.app.json"
+      }
+    },
+    "micro-device": {
+      "type": "application",
+      "root": "apps/micro-device",
+      "entryFile": "main",
+      "sourceRoot": "apps/micro-device/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/micro-device/tsconfig.app.json"
+      }
+    },
+    "micro-iam": {
+      "type": "application",
+      "root": "apps/micro-iam",
+      "entryFile": "main",
+      "sourceRoot": "apps/micro-iam/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/micro-iam/tsconfig.app.json"
+      }
+    }
   }
 }
