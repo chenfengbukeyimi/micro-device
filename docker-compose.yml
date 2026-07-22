@@ -15,4 +15,28 @@ services:
     environment:
       - CONSUL_BIND_INTERFACE=eth0
 
+  ##################### 微服务数据服务 #####################
+  micro-sqldb:
+    image: ${SQLDB_TYPE}:${SQLDB_VERSION}
+    container_name: micro-sqldb
+    restart: always
+    volumes:
+      - micro-sqldb-data:/var/lib/postgresql/data
+      - ./docker/sql/db.init.sql:/docker-entrypoint-initdb.d/init-multi-db.sql
+    environment:
+      POSTGRES_USER: ${SQLDB_USER}
+      POSTGRES_PASSWORD: ${SQLDB_PASSWORD}
+      ## 默认: 随便填
+      POSTGRES_DB: ${SQLDB_DEF_DB}
+    ports:
+      - "${SQLDB_PORT}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SQLDB_USER} -d ${SQLDB_DEF_DB}"]
+      retries: ${SQLDB_RETRIES}
+      timeout: ${SQLDB_TIMEOUT}
+      interval: ${SQLDB_INTERVAL}
+
   ##################### 微服务配置服务 #####################
+
+volumes:
+  micro-sqldb-data:
