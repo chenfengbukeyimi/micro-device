@@ -10,6 +10,24 @@
   "monorepo": true,
   "root": "apps/micro-device",
   "projects": {
+    "consul": {
+      "type": "library",
+      "root": "libs/consul",
+      "entryFile": "index",
+      "sourceRoot": "libs/consul/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/consul/tsconfig.lib.json"
+      }
+    },
+    "micro-authn": {
+      "type": "application",
+      "root": "apps/micro-authn",
+      "entryFile": "main",
+      "sourceRoot": "apps/micro-authn/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/micro-authn/tsconfig.app.json"
+      }
+    },
     "micro-authz": {
       "type": "application",
       "root": "apps/micro-authz",

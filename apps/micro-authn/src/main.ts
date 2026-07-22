@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const { SERVICE_NAME, SERVICE_HOST, SERVICE_PORT } =
-    (await ConsulClient.LoadConfig('micro_iam')) as unknown as ServiceOption;
+    (await ConsulClient.LoadConfig('micro_authn')) as unknown as ServiceOption;
 
   await app.listen(SERVICE_PORT);
   console.info(
