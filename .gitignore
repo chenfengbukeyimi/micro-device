@@ -1,6 +1,5 @@
 # sercret files
-.consul
-
+.config
 
 # compiled output
 /dist

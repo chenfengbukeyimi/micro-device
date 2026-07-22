@@ -19,7 +19,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/micro-device/test/jest-e2e.json",
     "prepare": "husky",
-    "word:check": "cspell lint **/*.{ts,md,json} --no-progress --config ./cspell.config.mts"
+    "word:check": "cspell lint **/*.{ts,md,json} --no-progress --config ./cspell.config.mts",
+    "facility:dev-up": "NODE_ENV=development bash ./docker-compose.setup.sh",
+    "facility:prod-up": "NODE_ENV=production bash ./docker-compose.setup.sh",
+    "facility:dev-down": "NODE_ENV=development bash ./docker-compose.dump.sh",
+    "facility:prod-down": "NODE_ENV=production bash ./docker-compose.dump.sh"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [

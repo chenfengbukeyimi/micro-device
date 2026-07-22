@@ -1,0 +1,89 @@
+## 密码凭据文件
+secrets:
+  consul_token:
+    file: ./.config/secret/consul_token.txt
+  sqldb_password:
+    file: ./.config/secret/sqldb_password.txt
+  redis_password:
+    file: ./.config/secret/redis_password.txt
+
+services:
+  ##################### 微服务配置服务 #####################
+  micro-consul:
+    image: consul:${CONSUL_VERSION}
+    container_name: micro-consul
+    restart: always
+    ports:
+      - "${CONSUL_WEB_PORT}:8500"
+      - "${CONSUL_DNS_PORT}:8600/tcp"
+      - "${CONSUL_DNS_PORT}:8600/udp"
+    volumes:
+      # 提供配置
+      - ${LOCAL_DIR}/consul/config/config.json:/consul/config/config.json:ro
+      # 生产环境: 启用生产卷名
+      - micro-consul-data:/consul/data:rw
+      - /etc/localtime:/etc/localtime:ro
+    secrets:
+      # 注入凭据
+      - consul_token
+    environment:
+      - TZ=${TZ}
+      - CONSUL_BIND_INTERFACE=${CONSUL_BIND_INTERFACE}
+    command: >
+      agent -server -bootstrap-expect=1 -client=0.0.0.0
+      -config-dir=/consul/config/config.json
+      -data-dir=/consul/data
+
+  ##################### 微服务数据服务 #####################
+  micro-sqldb:
+    image: ${SQLDB_TYPE}:${SQLDB_VERSION}
+    container_name: micro-sqldb
+    restart: always
+    volumes:
+      # 提供配置
+      - ${LOCAL_DIR}/sqldb/config/db.init.sql:/docker-entrypoint-initdb.d/init-multi-db.sql
+      # 生产环境: 启用生产卷名
+      - micro-sqldb-data:/var/lib/postgresql/data
+      # 时区同步
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${SQLDB_PORT}:5432"
+    secrets:
+      # 注入凭据
+      - sqldb_password
+    environment:
+      - TZ=${TZ}
+      - POSTGRES_USER=${SQLDB_USER}
+      - POSTGRES_PASSWORD=${SQLDB_PASSWORD}
+      ## 默认: 随便填，默认其中一个。
+      - POSTGRES_DB=${SQLDB_DEF_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SQLDB_USER} -d ${SQLDB_DEF_DB}"]
+      retries: ${SQLDB_RETRIES}
+      timeout: ${SQLDB_TIMEOUT}
+      interval: ${SQLDB_INTERVAL}
+
+  ##################### 微服务缓存服务 #####################
+  micro-redis-standalone:
+    image: redis:${REDIS_VERSION}
+    container_name: micro-redis-standalone
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      # 核心：提供配置
+      - ${LOCAL_DIR}redis/config/redis.standalone.conf:/usr/local/etc/redis/redis.conf:rw
+      # 生产环境: 启用生产卷名
+      - micro-redis-data:/data:rw
+      # 时区同步
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=${TZ}
+      - REDIS_PASSWORD_FILE=/run/secrets/redis_password
+    command: "redis-server /usr/local/etc/redis/redis.conf"
+  ##################### 微服务配置服务 #####################
+
+volumes:
+  micro-consul-data:
+  micro-sqldb-data:
+  micro-redis-data:

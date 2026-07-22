@@ -41,7 +41,7 @@ export class ConsulClient {
       const message = err.message || '未知错误';
 
       console.error(
-        `无法加载${serviceName}配置信息，错误码：${status}，错误信息：${message}。`,
+        `无法加载 ${serviceName} 配置信息，错误码：${status}，错误信息：${message}。`,
       );
       return null;
     }
@@ -49,9 +49,9 @@ export class ConsulClient {
 }
 
 // // 功能测试（特别提醒: 敏感数据，请加密后再配置到 consul 中）
-// async function main() {
-//   const config = await ConsulClient.LoadConfig('micro_iam');
-//   console.log(config);
-// }
+async function main() {
+  const config = await ConsulClient.LoadConfig('micro_iam');
+  console.log(config);
+}
 
-// void main();
+void main();
